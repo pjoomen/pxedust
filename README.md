@@ -6,7 +6,7 @@ supported:
 
   * console=ttyS0
   * ip=dhcp
-  * todisk=<label>
-  * size=<size of tmpfs>
-  * rootfs=<url>
-  * break=<top|preunpack|bottom>
+  * todisk=label
+  * size=size of tmpfs
+  * rootfs=url
+  * break=top|preunpack|bottom
