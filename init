@@ -61,6 +61,9 @@ if [ ! -f sbin/init ]; then
   fi
 fi
 
+# disable network configuration of eth0
+sed -i -e 's/^auto eth0/# auto eth0/' /newroot/etc/network/interfaces
+
 # mount sysfs and devtmpfs (udev)
 mount -n -t sysfs -o nodev,noexec,nosuid none /newroot/sys
 mount -n -t devtmpfs none /newroot/dev
