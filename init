@@ -31,9 +31,9 @@ fi
 # prepare the root, either /dev/vda or tmpfs
 mkdir /newroot
 if (grep -q todisk= /proc/cmdline); then
-  DEVICE=$(sed -n -e 's/.* \?todisk=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
+  TODISK=$(sed -n -e 's/.* \?todisk=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
   mknod /dev/vda b 253 0
-  [ -z "$(findfs LABEL=${DEVICE})" ] && mke2fs -L ${DEVICE} /dev/vda
+  [ -z "$(findfs LABEL=${TODISK})" ] && mke2fs -L ${TODISK} /dev/vda
   mount -t ext4 -o noatime /dev/vda /newroot
 else
   MEMSIZE=$(sed -n -e 's/.* \?size=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
