@@ -55,6 +55,9 @@ if [ ! -f sbin/init ]; then
     ROOTFS=$(sed -n -e 's/.* \?rootfs=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
     echo downloading and unpacking rootfs...
     wget -qO - ${ROOTFS} | tar zx
+    # get firstboot, if specified
+    FIRSTBOOT=$(sed -n -e 's/.* \?firstboot=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
+    [ -n "${FIRSTBOOT}" ] && wget -qO - ${FIRSTBOOT} > /newroot/usr/local/sbin/firstboot
   fi
 fi
 
