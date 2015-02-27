@@ -5,7 +5,7 @@
 #
 # This version allows us to boot from an externally maintained rootfs,
 # which is loaded from a given URL, and install this rootfs either on a
-# tmpfs (RAM) or on a KVM (/dev/vda) block-device.
+# tmpfs (RAM) or on a KVM block-device.
 #
 # Note that this also provisions a serial console upstart script if a
 # serial console is passed on the kernel commandline.
@@ -28,13 +28,16 @@ if (grep -q break=top /proc/cmdline); then
   /bin/busybox sh
 fi
 
-# prepare the root, either /dev/vda or tmpfs
+# prepare the root, either block-device or tmpfs
 mkdir /newroot
 if (grep -q todisk= /proc/cmdline); then
   TODISK=$(sed -n -e 's/.* \?todisk=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
-  mknod /dev/vda b 253 0
-  [ -z "$(findfs LABEL=${TODISK})" ] && mke2fs -L ${TODISK} /dev/vda
-  mount -t ext4 -o noatime /dev/vda /newroot
+  DEVICE=$(sed -n -e 's/.* \?device=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
+  MAJOR=$(sed -n -e 's/.* \?major=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
+  MINOR=$(sed -n -e 's/.* \?minor=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
+  mknod /dev/${DEVICE:-vda} b ${MAJOR:-253} ${MINOR:-0}
+  [ -z "$(findfs LABEL=${TODISK})" ] && mke2fs -L ${TODISK} /dev/${DEVICE:-vda}
+  mount -t ext4 -o noatime /dev/${DEVICE:-vda} /newroot
 else
   MEMSIZE=$(sed -n -e 's/.* \?size=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
   mount -t tmpfs -o size=${MEMSIZE:-4G},mode=0755 none /newroot
