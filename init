@@ -35,9 +35,10 @@ if (grep -q todisk= /proc/cmdline); then
   DEVICE=$(sed -n -e 's/.* \?device=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
   MAJOR=$(sed -n -e 's/.* \?major=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
   MINOR=$(sed -n -e 's/.* \?minor=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
-  mknod /dev/${DEVICE:-vda} b ${MAJOR:-253} ${MINOR:-0}
-  [ -z "$(findfs LABEL=${TODISK})" ] && mke2fs -L ${TODISK} /dev/${DEVICE:-vda}
-  mount -t ext4 -o noatime /dev/${DEVICE:-vda} /newroot
+  ROOT=/dev/${DEVICE:-root}
+  mknod ${ROOT} b ${MAJOR:-253} ${MINOR:-0}
+  [ -z "$(findfs LABEL=${TODISK})" ] && mke2fs -L ${TODISK} ${ROOT}
+  mount -t ext4 -o noatime ${ROOT} /newroot
 else
   MEMSIZE=$(sed -n -e 's/.* \?size=\([^ ]*\)\? \?.*/\1/p' /proc/cmdline)
   mount -t tmpfs -o size=${MEMSIZE:-4G},mode=0755 none /newroot
